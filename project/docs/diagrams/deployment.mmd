@@ -1,0 +1,17 @@
+flowchart TB
+  subgraph compose ["docker compose up (one internal network)"]
+    FE["frontend :5173"]
+    GW["gateway :3000"]
+    US["user-service :3001"]
+    CS["catalog-service :3002"]
+    CRT["cart-service :3003"]
+    OS["order-service :3004"]
+    NS["notification-service :3005"]
+    MQ{{"rabbitmq :5672 and :15672"}}
+    VOL[("one SQLite file per service<br/>each in its own volume")]
+  end
+  FE --> GW
+  GW --> US & CS & CRT & OS & NS
+  OS --> MQ
+  MQ --> CRT & CS & NS
+  US & CS & CRT & OS & NS --- VOL

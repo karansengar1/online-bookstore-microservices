@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor U as User
+  participant GW as API Gateway
+  participant US as User Service
+  U->>GW: POST /api/auth/login (email, password)
+  GW->>US: POST /auth/login
+  US->>US: check password hash
+  alt valid credentials
+    US-->>GW: 200 signed JWT (id, role, expiry)
+    GW-->>U: 200 token
+  else invalid credentials
+    US-->>GW: 401 Unauthorized
+    GW-->>U: 401 Unauthorized
+  end
+  U->>GW: any later request with Bearer token
+  GW->>GW: verify signature and expiry
+  GW->>GW: forward X-User-Id and X-User-Role to the service

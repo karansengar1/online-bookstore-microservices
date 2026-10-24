@@ -1,0 +1,7 @@
+stateDiagram-v2
+  [*] --> PLACED: customer places order
+  PLACED --> SHIPPED: admin marks shipped
+  SHIPPED --> DELIVERED: admin marks delivered
+  PLACED --> CANCELLED: customer or admin cancels
+  DELIVERED --> [*]
+  CANCELLED --> [*]

@@ -1,0 +1,36 @@
+flowchart LR
+  Browser["Web client<br/>React + Vite + TypeScript"]
+  GW["API Gateway<br/>Express: JWT check and routing"]
+  subgraph svc ["Microservices"]
+    US["User Service"]
+    CS["Catalog Service"]
+    CRT["Cart Service"]
+    OS["Order Service"]
+    NS["Notification Service"]
+  end
+  MQ{{"RabbitMQ<br/>topic exchange bookstore.events"}}
+  UDB[("user-db")]
+  CDB[("catalog-db")]
+  RDB[("cart-db")]
+  ODB[("order-db")]
+  NDB[("notification-db")]
+
+  Browser -->|"REST / JSON"| GW
+  Browser -.->|"SSE stream"| GW
+  GW --> US
+  GW --> CS
+  GW --> CRT
+  GW --> OS
+  GW --> NS
+  US --- UDB
+  CS --- CDB
+  CRT --- RDB
+  OS --- ODB
+  NS --- NDB
+  CRT -->|"REST: does the book exist?"| CS
+  OS -->|"REST: read cart"| CRT
+  OS -->|"REST: reserve stock"| CS
+  OS ==>|"publish order.*"| MQ
+  MQ ==>|"order.placed"| CRT
+  MQ ==>|"order.cancelled"| CS
+  MQ ==>|"order.*"| NS

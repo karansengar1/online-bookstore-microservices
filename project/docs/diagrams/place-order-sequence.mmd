@@ -1,0 +1,29 @@
+sequenceDiagram
+  autonumber
+  actor C as Customer
+  participant GW as API Gateway
+  participant OS as Order Service
+  participant CRT as Cart Service
+  participant CS as Catalog Service
+  participant MQ as RabbitMQ
+  participant NS as Notification Service
+  C->>GW: POST /api/orders (Bearer JWT)
+  GW->>GW: verify JWT, add X-User-Id and X-User-Role
+  GW->>OS: POST /orders
+  OS->>CRT: GET /internal/carts/:userId
+  CRT-->>OS: cart items
+  OS->>CS: POST /internal/books/reserve
+  alt not enough stock
+    CS-->>OS: 409 Conflict
+    OS-->>GW: 409 order rejected
+    GW-->>C: 409 order rejected
+  else stock reserved
+    CS-->>OS: 200 reserved
+    OS->>OS: save order with status PLACED
+    OS-)MQ: publish order.placed
+    OS-->>GW: 201 Created
+    GW-->>C: 201 Created
+    MQ-)CRT: order.placed, clear the cart
+    MQ-)NS: order.placed, store notification
+    NS-)C: SSE event notification
+  end

@@ -1,0 +1,59 @@
+erDiagram
+  USERS {
+    uuid id PK
+    string email UK
+    string password_hash
+    string name
+    string role
+    datetime created_at
+  }
+  BOOKS {
+    uuid id PK
+    string title
+    string author
+    string isbn UK
+    int price_cents
+    int stock
+    string description
+  }
+  CARTS {
+    uuid id PK
+    uuid user_id UK
+    datetime updated_at
+  }
+  CART_ITEMS {
+    uuid id PK
+    uuid cart_id FK
+    uuid book_id
+    int quantity
+  }
+  ORDERS {
+    uuid id PK
+    uuid user_id
+    string status
+    int total_cents
+    datetime created_at
+  }
+  ORDER_ITEMS {
+    uuid id PK
+    uuid order_id FK
+    uuid book_id
+    string title_snapshot
+    int unit_price_cents
+    int quantity
+  }
+  NOTIFICATIONS {
+    uuid id PK
+    uuid user_id
+    string type
+    string message
+    boolean is_read
+    datetime created_at
+  }
+  CARTS ||--o{ CART_ITEMS : contains
+  ORDERS ||--o{ ORDER_ITEMS : contains
+  USERS ||..o{ CARTS : "user_id only"
+  USERS ||..o{ ORDERS : "user_id only"
+  USERS ||..o{ NOTIFICATIONS : "user_id only"
+  BOOKS ||..o{ CART_ITEMS : "book_id only"
+  BOOKS ||..o{ ORDER_ITEMS : "book_id only"
