@@ -1,6 +1,6 @@
-| name   | Karan Sengar   |
+| Name   | Karan Sengar   |
 | ------ | ---------------- |
-| neptun | ZTYB0C |
+| Neptun | ZTYB0C |
 
 # Programming 5 – Karan Sengar
 
