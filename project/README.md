@@ -25,7 +25,7 @@ A microservice-based web application for browsing, ordering and tracking books o
 
 ## GitHub Projects
 
-- [PROJECT](https://github.com/users/karansengar1/projects/1)
+- [PROJECT BOARD](https://github.com/users/karansengar1/projects/1)
 - The board shows the **Todo → In progress → Done** status of specific tasks and is also accessible to the instructor.
 
 ## Additional documents
