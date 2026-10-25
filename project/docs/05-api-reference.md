@@ -1,5 +1,7 @@
 # 05 API reference
 
+[Index](README.md) · [01 Overview](01-overview.md) · [02 Architecture](02-architecture.md) · [03 Communication](03-communication.md) · [04 Data model](04-data-model.md) · [05 API](05-api-reference.md) · [06 Design decisions](06-design-decisions.md)
+
 Base URL (through the gateway): `http://localhost:3000`. All bodies are JSON. Errors use the format `{ "error": "message" }` with a suitable HTTP status (400, 401, 403, 404, 409, 503).
 
 Access: **Public** = no token, **Customer** = valid token, **Admin** = valid token with role `ADMIN`, **Owner or Admin** = the resource belongs to the caller, or the caller is an admin.
@@ -64,14 +66,15 @@ Internal: `GET /internal/carts/:userId`.
 | ------ | ----------------------------- | -------- | ----------------------------------------------- |
 | GET    | `/api/notifications`          | Customer | Own notifications, newest first                 |
 | PATCH  | `/api/notifications/:id/read` | Customer | Mark as read                                    |
-| GET    | `/api/notifications/stream`   | Customer | SSE stream (`text/event-stream`)                |
+| GET    | `/api/notifications/ws`       | Customer | WebSocket upgrade; token as `?access_token=`    |
 
-SSE event:
+WebSocket message (server to client):
 
+```json
+{ "type": "notification", "data": { "id": "...", "kind": "order.placed", "message": "Your order was placed", "createdAt": "..." } }
 ```
-event: notification
-data: {"id":"...","type":"order.placed","message":"Your order was placed","createdAt":"..."}
-```
+
+The server sends a ping every 30 seconds and the browser answers with a pong automatically. The client sends no application messages in this version.
 
 ## Health
 

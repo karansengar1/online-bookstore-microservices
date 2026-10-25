@@ -1,0 +1,15 @@
+flowchart LR
+  C(["Customer"])
+  A(["Admin"])
+  subgraph sys ["Online Bookstore"]
+    UC1["Register / log in"]
+    UC2["Browse and search books"]
+    UC3["Manage cart"]
+    UC4["Place an order"]
+    UC5["Cancel an order"]
+    UC6["Receive live notifications"]
+    UC7["Manage books and stock"]
+    UC8["Mark orders shipped / delivered"]
+  end
+  C --- UC1 & UC2 & UC3 & UC4 & UC5 & UC6
+  A --- UC1 & UC2 & UC5 & UC7 & UC8

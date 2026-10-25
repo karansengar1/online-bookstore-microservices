@@ -4,7 +4,7 @@
 | ---- | -------- |
 | [01 Overview](01-overview.md) | Requirements, system context, services, use cases, technology |
 | [02 Architecture](02-architecture.md) | Container and component views, deployment, security model |
-| [03 Communication](03-communication.md) | Synchronous and asynchronous flows, login, SSE, failure behaviour |
+| [03 Communication](03-communication.md) | Synchronous and asynchronous flows, login, WebSocket, failure behaviour |
 | [04 Data model](04-data-model.md) | ER diagram, data owned by each service, message contracts, validation |
 | [05 API reference](05-api-reference.md) | Gateway routing, endpoints with access rules, events |
 | [06 Design decisions](06-design-decisions.md) | Decisions, known limitations, likely questions |
@@ -30,7 +30,7 @@ flowchart LR
   NDB[("notification-db")]
 
   Browser -->|"REST / JSON"| GW
-  Browser -.->|"SSE stream"| GW
+  Browser -.->|"WebSocket"| GW
   GW --> US
   GW --> CS
   GW --> CRT
@@ -50,4 +50,4 @@ flowchart LR
   MQ ==>|"order.*"| NS
 ```
 
-Solid arrows are synchronous REST calls. Thick arrows are asynchronous events through RabbitMQ. The dotted arrow is the long-lived SSE stream to the browser.
+Solid arrows are synchronous REST calls. Thick arrows are asynchronous events through RabbitMQ. The dotted arrow is the long-lived WebSocket connection to the browser.

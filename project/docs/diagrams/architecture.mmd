@@ -16,7 +16,7 @@ flowchart LR
   NDB[("notification-db")]
 
   Browser -->|"REST / JSON"| GW
-  Browser -.->|"SSE stream"| GW
+  Browser -.->|"WebSocket"| GW
   GW --> US
   GW --> CS
   GW --> CRT

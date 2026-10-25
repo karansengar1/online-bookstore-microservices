@@ -25,5 +25,5 @@ sequenceDiagram
     GW-->>C: 201 Created
     MQ-)CRT: order.placed, clear the cart
     MQ-)NS: order.placed, store notification
-    NS-)C: SSE event notification
+    NS-)C: WebSocket message notification
   end

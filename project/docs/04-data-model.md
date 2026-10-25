@@ -1,5 +1,7 @@
 # 04 Data model
 
+[Index](README.md) · [01 Overview](01-overview.md) · [02 Architecture](02-architecture.md) · [03 Communication](03-communication.md) · [04 Data model](04-data-model.md) · [05 API](05-api-reference.md) · [06 Design decisions](06-design-decisions.md)
+
 ## ER diagram
 
 ```mermaid

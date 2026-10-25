@@ -1,5 +1,7 @@
 # 02 Architecture
 
+[Index](README.md) · [01 Overview](01-overview.md) · [02 Architecture](02-architecture.md) · [03 Communication](03-communication.md) · [04 Data model](04-data-model.md) · [05 API](05-api-reference.md) · [06 Design decisions](06-design-decisions.md)
+
 ## Container view
 
 ```mermaid
@@ -21,7 +23,7 @@ flowchart LR
   NDB[("notification-db")]
 
   Browser -->|"REST / JSON"| GW
-  Browser -.->|"SSE stream"| GW
+  Browser -.->|"WebSocket"| GW
   GW --> US
   GW --> CS
   GW --> CRT
@@ -44,12 +46,12 @@ flowchart LR
 | Container            | Technology            | Responsibility                                       |
 | -------------------- | --------------------- | ---------------------------------------------------- |
 | Web client           | React, Vite           | UI for customers and admins; talks only to the gateway |
-| API Gateway          | Express               | Single entry point, JWT verification, routing, SSE pass-through |
+| API Gateway          | Express               | Single entry point, JWT verification, routing, WebSocket pass-through |
 | User Service         | Express, SQLite       | Identity                                             |
 | Catalog Service      | Express, SQLite       | Books and stock                                      |
 | Cart Service         | Express, SQLite       | Carts                                                |
 | Order Service        | Express, SQLite       | Orders and event publishing                          |
-| Notification Service | Express, SQLite       | Event consumer and SSE stream                        |
+| Notification Service | Express, SQLite       | Event consumer and WebSocket push                        |
 | RabbitMQ             | Message broker        | Topic exchange `bookstore.events`                    |
 
 ## Component view of one service

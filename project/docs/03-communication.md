@@ -1,5 +1,7 @@
 # 03 Communication
 
+[Index](README.md) · [01 Overview](01-overview.md) · [02 Architecture](02-architecture.md) · [03 Communication](03-communication.md) · [04 Data model](04-data-model.md) · [05 API](05-api-reference.md) · [06 Design decisions](06-design-decisions.md)
+
 ## Which style where
 
 | Interaction                          | Style        | Why                                                                  |
@@ -9,7 +11,7 @@
 | Order → Cart (read the cart)         | REST (sync)  | Needed to build the order                                            |
 | Order → Catalog (reserve stock)      | REST (sync)  | The order must be rejected immediately if stock is missing           |
 | Order → everyone else ("order placed") | Event (async) | Order does not need to know who reacts; failures elsewhere must not block it |
-| Notification → browser               | SSE (push)   | One-way live updates are enough; no polling                          |
+| Notification → browser               | WebSocket (push) | Persistent connection, no polling; the server pushes as soon as an event arrives |
 
 ## Login and authenticated requests
 
@@ -64,7 +66,7 @@ sequenceDiagram
     GW-->>C: 201 Created
     MQ-)CRT: order.placed, clear the cart
     MQ-)NS: order.placed, store notification
-    NS-)C: SSE event notification
+    NS-)C: WebSocket message notification
   end
 ```
 
@@ -97,14 +99,22 @@ Exchange: `bookstore.events` (topic, durable).
 
 Each consumer has its own durable queue (for example `cart.order-placed`, `notification.orders`). The Notification Service binds with `order.*`.
 
-## Live notifications (SSE)
+## Live notifications (WebSocket)
 
-1. After login, the web client opens `GET /api/notifications/stream` with `EventSource`.
-2. The gateway proxies the stream without buffering.
-3. When the Notification Service stores a notification, it writes an SSE event to every open stream of that user.
-4. If the connection drops, the browser reconnects automatically and the client loads missed notifications with `GET /api/notifications`.
+1. After login, the web client opens `ws://localhost:3000/api/notifications/ws?access_token=<JWT>`.
+2. The gateway checks the token, then proxies the WebSocket upgrade to the Notification Service.
+3. The Notification Service keeps a map from user id to open sockets. When it stores a notification, it sends a JSON message to every open socket of that user.
+4. Heartbeat: the server sends a ping every 30 seconds. A socket that does not answer with a pong is closed.
+5. Reconnect: if the connection drops, the client reconnects with a growing delay (1 s, 2 s, 4 s, up to 30 s).
+6. Resynchronisation: after reconnecting, the client loads missed notifications with `GET /api/notifications` and merges them by id, because messages sent while it was offline are not replayed on the socket.
 
-`EventSource` cannot set an `Authorization` header, so for this one route the gateway also accepts the token as a query parameter (`?access_token=`).
+Browsers cannot set an `Authorization` header on a WebSocket, so for this one route the token is sent as the query parameter `access_token`.
+
+Message from server to client:
+
+```json
+{ "type": "notification", "data": { "id": "uuid", "kind": "order.placed", "message": "Your order was placed", "createdAt": "2026-10-24T12:00:00Z" } }
+```
 
 ## Failure behaviour
 
@@ -118,3 +128,4 @@ Each consumer has its own durable queue (for example `cart.order-placed`, `notif
 | A message keeps failing                     | After 3 attempts it moves to a dead-letter queue for inspection                             |
 | Order save fails after stock was reserved   | Order Service calls `POST /internal/books/release` to undo the reservation                  |
 | Slow downstream call                        | Every service-to-service call has a timeout; no unbounded waiting                           |
+| WebSocket connection drops                  | Client reconnects with backoff and reloads missed notifications through the REST endpoint |

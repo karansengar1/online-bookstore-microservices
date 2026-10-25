@@ -1,0 +1,6 @@
+flowchart LR
+  C(["Customer<br/>[person]<br/>browses books and places orders"])
+  A(["Admin<br/>[person]<br/>manages the catalogue and orders"])
+  S["Online Bookstore<br/>[software system]<br/>catalogue, cart, orders<br/>and live notifications"]
+  C -->|"browses, orders, receives live updates<br/>(HTTPS / WebSocket)"| S
+  A -->|"manages books, ships orders<br/>(HTTPS / WebSocket)"| S
