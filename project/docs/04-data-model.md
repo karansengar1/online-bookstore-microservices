@@ -113,7 +113,11 @@ Internal request `POST /internal/books/reserve`:
 { "items": [{ "bookId": "uuid", "quantity": 2 }] }
 ```
 
-The reservation is all-or-nothing: if one book lacks stock, nothing is reserved.
+The reservation is all-or-nothing: if one book lacks stock, nothing is reserved (`409`, with the `bookId` that failed; an unknown book gives `404`). On success the response carries what the Order Service needs for its price snapshot:
+
+```json
+{ "items": [{ "bookId": "uuid", "title": "Clean Code", "priceCents": 3990, "quantity": 2 }] }
+```
 
 ## Validation rules
 
