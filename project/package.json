@@ -9,13 +9,18 @@
     "services/*"
   ],
   "scripts": {
+    "dev:all": "concurrently -n user,catalog,cart,gateway -c blue,green,yellow,magenta \"npm:dev:user\" \"npm:dev:catalog\" \"npm:dev:cart\" \"npm:dev:gateway\"",
     "dev:gateway": "npm run dev -w gateway",
     "dev:user": "npm run dev -w services/user-service",
     "dev:catalog": "npm run dev -w services/catalog-service",
+    "dev:cart": "npm run dev -w services/cart-service",
     "test": "npm test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
   }
 }

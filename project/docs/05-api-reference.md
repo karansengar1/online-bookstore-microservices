@@ -48,6 +48,18 @@ Internal (not reachable through the gateway): `POST /internal/books/reserve`, `P
 | DELETE | `/api/cart/items/:bookId`   | Customer | Remove an item                       |
 | DELETE | `/api/cart`                 | Customer | Empty the cart                       |
 
+`GET /api/cart` returns the lines with title, price and total, taken from the Catalog service:
+
+```json
+{
+  "items": [{ "bookId": "uuid", "quantity": 2, "book": { "title": "Clean Code", "author": "Robert C. Martin", "priceCents": 3990, "stock": 15 }, "lineTotalCents": 7980 }],
+  "totalCents": 7980,
+  "catalogAvailable": true
+}
+```
+
+Adding or changing an item answers `404` for an unknown book, `409` (with `available`) when more is requested than is in stock, and `503` when the Catalog Service is down. If the Catalog Service is down, `GET /api/cart` still works: `book` is `null`, `catalogAvailable` is `false` and `totalCents` is `null`.
+
 Internal: `GET /internal/carts/:userId`.
 
 ## Order Service

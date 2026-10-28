@@ -122,6 +122,7 @@ Message from server to client:
 | ------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | Catalog Service is down during checkout     | Order Service times out (3 s), returns `503`; no order is created                           |
 | Cart Service is down during checkout        | Same: `503`, nothing is saved                                                               |
+| Catalog Service is down while using the cart | Adding or changing an item gives `503`; viewing the cart still works, without titles and prices |
 | Order saved but event cannot be published   | Order stays valid; event is retried from a small outbox table in the Order database         |
 | Notification Service is down                | Messages wait in its queue and are processed when it returns                                |
 | Same event delivered twice                  | Consumers store processed event ids and ignore duplicates (idempotent)                      |
