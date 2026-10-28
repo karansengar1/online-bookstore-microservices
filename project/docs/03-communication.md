@@ -22,7 +22,7 @@ sequenceDiagram
   participant GW as API Gateway
   participant US as User Service
   U->>GW: POST /api/auth/login (email, password)
-  GW->>US: POST /auth/login
+  GW->>US: POST /api/auth/login
   US->>US: check password hash
   alt valid credentials
     US-->>GW: 200 signed JWT (id, role, expiry)
@@ -50,7 +50,7 @@ sequenceDiagram
   participant NS as Notification Service
   C->>GW: POST /api/orders (Bearer JWT)
   GW->>GW: verify JWT, add X-User-Id and X-User-Role
-  GW->>OS: POST /orders
+  GW->>OS: POST /api/orders
   OS->>CRT: GET /internal/carts/:userId
   CRT-->>OS: cart items
   OS->>CS: POST /internal/books/reserve

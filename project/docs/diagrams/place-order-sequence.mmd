@@ -9,7 +9,7 @@ sequenceDiagram
   participant NS as Notification Service
   C->>GW: POST /api/orders (Bearer JWT)
   GW->>GW: verify JWT, add X-User-Id and X-User-Role
-  GW->>OS: POST /orders
+  GW->>OS: POST /api/orders
   OS->>CRT: GET /internal/carts/:userId
   CRT-->>OS: cart items
   OS->>CS: POST /internal/books/reserve

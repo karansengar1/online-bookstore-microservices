@@ -4,7 +4,7 @@ sequenceDiagram
   participant GW as API Gateway
   participant US as User Service
   U->>GW: POST /api/auth/login (email, password)
-  GW->>US: POST /auth/login
+  GW->>US: POST /api/auth/login
   US->>US: check password hash
   alt valid credentials
     US-->>GW: 200 signed JWT (id, role, expiry)

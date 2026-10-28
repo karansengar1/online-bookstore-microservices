@@ -114,7 +114,7 @@ Source: [`diagrams/use-cases.mmd`](diagrams/use-cases.mmd)
 
 | Concern              | Choice                                        | Why                                                                 |
 | -------------------- | --------------------------------------------- | ------------------------------------------------------------------- |
-| Backend              | Node.js 20, Express, TypeScript               | Small services with very little boilerplate; one language everywhere |
+| Backend              | Node.js 22, Express 5, TypeScript               | Small services with very little boilerplate; one language everywhere |
 | Validation           | zod                                           | Request contracts checked in one place                              |
 | Real-time            | WebSocket (`ws` library)                      | One persistent connection per browser; server pushes without polling |
 | Messaging            | RabbitMQ (amqplib)                            | Topic exchange lets several services react to the same event        |

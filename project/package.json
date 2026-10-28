@@ -1,0 +1,20 @@
+{
+  "name": "online-bookstore",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Programming 5 final project: online bookstore built from 5 microservices",
+  "type": "module",
+  "workspaces": [
+    "gateway",
+    "services/*"
+  ],
+  "scripts": {
+    "dev:gateway": "npm run dev -w gateway",
+    "dev:user": "npm run dev -w services/user-service",
+    "test": "npm test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
