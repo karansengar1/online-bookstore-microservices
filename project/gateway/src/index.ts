@@ -1,4 +1,4 @@
-import { createGateway } from "./app.js";
+import { createGateway, createUpgradeHandler, type GatewayConfig } from "./app.js";
 
 const port = Number(process.env.PORT ?? 3000);
 
@@ -13,7 +13,7 @@ if (jwtSecret === "dev-secret-change-me") {
   console.warn("WARNING: using the default JWT secret. Set JWT_SECRET outside of local development.");
 }
 
-const app = createGateway({
+const config: GatewayConfig = {
   jwtSecret,
   corsOrigin: process.env.CORS_ORIGIN ?? "http://localhost:5173",
   routes: [
@@ -24,8 +24,11 @@ const app = createGateway({
     { prefix: "/api/orders", target: orderService },
     { prefix: "/api/notifications", target: notificationService },
   ],
-});
+};
 
-app.listen(port, () => {
+const server = createGateway(config).listen(port, () => {
   console.log(`gateway listening on http://localhost:${port}`);
 });
+
+// WebSocket connections (live notifications) arrive as "upgrade" requests.
+server.on("upgrade", createUpgradeHandler(config));

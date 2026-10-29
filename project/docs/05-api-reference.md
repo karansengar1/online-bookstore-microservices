@@ -80,6 +80,8 @@ Internal: `GET /internal/carts/:userId`.
 | PATCH  | `/api/notifications/:id/read` | Customer | Mark as read                                    |
 | GET    | `/api/notifications/ws`       | Customer | WebSocket upgrade; token as `?access_token=`    |
 
+The gateway checks the token in the query string, sets `X-User-Id`, and proxies the upgrade to the Notification Service. A missing or invalid token gets `401` and no connection. Right after connecting, the server sends `{ "type": "connected" }`.
+
 WebSocket message (server to client):
 
 ```json

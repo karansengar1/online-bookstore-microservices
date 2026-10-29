@@ -110,6 +110,8 @@ Each consumer has its own durable queue (for example `cart.order-placed`, `notif
 
 Browsers cannot set an `Authorization` header on a WebSocket, so for this one route the token is sent as the query parameter `access_token`.
 
+Right after the connection is accepted the server sends `{ "type": "connected" }`, so the client knows live updates are on. Clients ignore message types they do not know.
+
 Message from server to client:
 
 ```json

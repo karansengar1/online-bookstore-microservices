@@ -2,7 +2,7 @@
 
 Single entry point: JWT verification, routing to the services, CORS. Port **3000**.
 
-**Status:** implemented and tested. WebSocket pass-through is added together with the Notification Service.
+**Status:** implemented and tested, including WebSocket pass-through.
 
 ## What it does
 
@@ -10,6 +10,7 @@ Single entry point: JWT verification, routing to the services, CORS. Port **3000
 - Every other `/api/*` route needs `Authorization: Bearer <JWT>`. The gateway verifies the token and passes `X-User-Id` and `X-User-Role` to the service. Identity headers sent by the client are always removed.
 - Routes by prefix: `/api/auth`, `/api/users` → User; `/api/books` → Catalog; `/api/cart` → Cart; `/api/orders` → Order; `/api/notifications` → Notification.
 - `/internal/*` is never forwarded.
+- WebSocket: `ws://localhost:3000/api/notifications/ws?access_token=<JWT>`. The gateway checks the token (browsers cannot send an Authorization header on a WebSocket), sets `X-User-Id` and hands the connection to the Notification service.
 - A service that is down gives `503 Service unavailable`.
 
 ## Run and test

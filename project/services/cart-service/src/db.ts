@@ -24,6 +24,11 @@ export function openDb(path: string): Db {
       quantity INTEGER NOT NULL CHECK (quantity >= 1),
       UNIQUE (cart_id, book_id)
     );
+    -- ids of the events already handled, so a repeated event does nothing
+    CREATE TABLE IF NOT EXISTS processed_events (
+      event_id     TEXT PRIMARY KEY,
+      processed_at TEXT NOT NULL
+    );
   `);
   return db;
 }

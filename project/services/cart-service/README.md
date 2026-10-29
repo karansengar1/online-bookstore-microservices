@@ -24,6 +24,10 @@ Adding or changing checks the Catalog service: unknown book → `404`, more than
 | ------ | ------------------------- | ------- | --------------------------------------------- |
 | GET    | `/internal/carts/:userId` | Order   | Raw cart lines `{ userId, items: [{ bookId, quantity }] }` |
 
+## Events
+
+Listens on the queue `cart.order-placed` (bound to `order.placed`). When an order is placed, the customer's cart is emptied. Each event id is saved, so a repeated event does nothing; a message that keeps failing is dead-lettered to `cart.order-placed.dlq`.
+
 ## Run and test
 
 From the `project/` folder:
@@ -41,3 +45,4 @@ npm test -w services/cart-service
 | `PORT`                | `3003`                  | Port to listen on                |
 | `DB_PATH`             | `./data/cart.sqlite`    | SQLite file                      |
 | `CATALOG_SERVICE_URL` | `http://localhost:3002` | Where the Catalog service runs   |
+| `RABBITMQ_URL`        | `amqp://guest:guest@localhost:5672` | RabbitMQ (events are optional for the REST part) |

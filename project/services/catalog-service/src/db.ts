@@ -31,7 +31,12 @@ export function openDb(path: string): Db {
       stock       INTEGER NOT NULL CHECK (stock >= 0),
       description TEXT NOT NULL DEFAULT '',
       created_at  TEXT NOT NULL
-    )
+    );
+    -- ids of the events already handled, so a repeated event does nothing
+    CREATE TABLE IF NOT EXISTS processed_events (
+      event_id     TEXT PRIMARY KEY,
+      processed_at TEXT NOT NULL
+    );
   `);
   return db;
 }

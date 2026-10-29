@@ -1,4 +1,7 @@
 import express, { type NextFunction, type Request, type Response } from "express";
+import type { IncomingMessage } from "node:http";
+import type { Socket } from "node:net";
+import type { Duplex } from "node:stream";
 import jwt from "jsonwebtoken";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
@@ -121,4 +124,49 @@ export function createGateway(config: GatewayConfig) {
   });
 
   return app;
+}
+
+/**
+ * WebSocket connections do not pass through the Express middleware above: the browser sends an
+ * "upgrade" request instead. This handler does the same job for them: it checks the token,
+ * puts the user's id into the headers and then hands the connection to the Notification service.
+ * Browsers cannot set an Authorization header on a WebSocket, so the token comes as ?access_token=.
+ */
+export function createUpgradeHandler(config: GatewayConfig) {
+  const route = config.routes.find((r) => r.prefix === "/api/notifications");
+  const proxy = route ? createProxyMiddleware({ target: route.target, changeOrigin: true, ws: true }) : undefined;
+
+  return (req: IncomingMessage, socket: Duplex, head: Buffer) => {
+    const reject = (code: number, text: string) => {
+      socket.write(`HTTP/1.1 ${code} ${text}\r\nConnection: close\r\n\r\n`);
+      socket.destroy();
+    };
+
+    const url = new URL(req.url ?? "/", "http://localhost");
+    if (!proxy || url.pathname !== "/api/notifications/ws") {
+      socket.destroy();
+      return;
+    }
+
+    // Never trust identity headers that came from the outside.
+    delete req.headers["x-user-id"];
+    delete req.headers["x-user-role"];
+
+    const token = url.searchParams.get("access_token");
+    if (!token) {
+      reject(401, "Unauthorized");
+      return;
+    }
+    try {
+      const payload = jwt.verify(token, config.jwtSecret, { algorithms: ["HS256"] });
+      if (typeof payload === "string" || !payload.sub) throw new Error("Unexpected token payload");
+      req.headers["x-user-id"] = payload.sub;
+      req.headers["x-user-role"] = String(payload["role"] ?? "CUSTOMER");
+    } catch {
+      reject(401, "Unauthorized");
+      return;
+    }
+
+    proxy.upgrade?.(req, socket as Socket, head);
+  };
 }

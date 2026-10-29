@@ -24,6 +24,10 @@ A book looks like `{ id, title, author, isbn, priceCents, stock, description }`.
 | POST   | `/internal/books/reserve` | Order  | Body `{ items: [{ bookId, quantity }] }`. All-or-nothing. Returns `{ items: [{ bookId, title, priceCents, quantity }] }`, or 409 (not enough stock) / 404 (unknown book) with the `bookId` |
 | POST   | `/internal/books/release` | Order  | Gives reserved stock back (failed or cancelled order)                       |
 
+## Events
+
+Listens on the queue `catalog.order-cancelled` (bound to `order.cancelled`). When an order is cancelled, the stock of its items goes back to the shelves. Each event id is saved, so the stock is never given back twice; a message that keeps failing is dead-lettered to `catalog.order-cancelled.dlq`.
+
 ## Run and test
 
 From the `project/` folder:
@@ -43,3 +47,4 @@ On first start the catalogue is filled with 8 demo books (placeholder ISBNs `DEM
 | `PORT`        | `3002`                 | Port to listen on          |
 | `DB_PATH`     | `./data/catalog.sqlite` | SQLite file               |
 | `SEED_BOOKS`  | `true`                 | Add demo books when empty  |
+| `RABBITMQ_URL` | `amqp://guest:guest@localhost:5672` | RabbitMQ for the cancel events |
