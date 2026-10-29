@@ -9,11 +9,14 @@
     "services/*"
   ],
   "scripts": {
-    "dev:all": "concurrently -n user,catalog,cart,gateway -c blue,green,yellow,magenta \"npm:dev:user\" \"npm:dev:catalog\" \"npm:dev:cart\" \"npm:dev:gateway\"",
+    "infra:up": "docker compose up -d rabbitmq",
+    "infra:down": "docker compose down",
+    "dev:all": "concurrently -n user,catalog,cart,order,gateway -c blue,green,yellow,cyan,magenta \"npm:dev:user\" \"npm:dev:catalog\" \"npm:dev:cart\" \"npm:dev:order\" \"npm:dev:gateway\"",
     "dev:gateway": "npm run dev -w gateway",
     "dev:user": "npm run dev -w services/user-service",
     "dev:catalog": "npm run dev -w services/catalog-service",
     "dev:cart": "npm run dev -w services/cart-service",
+    "dev:order": "npm run dev -w services/order-service",
     "test": "npm test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },

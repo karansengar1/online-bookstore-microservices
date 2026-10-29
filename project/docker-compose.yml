@@ -1,0 +1,13 @@
+# For now this starts only the message broker. The services are added when they are packaged in Docker.
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: bookstore-rabbitmq
+    ports:
+      - "5672:5672"     # AMQP, used by the services
+      - "15672:15672"   # management web page (guest / guest)
+    healthcheck:
+      test: ["rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

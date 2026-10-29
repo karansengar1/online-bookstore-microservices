@@ -68,7 +68,7 @@ Internal: `GET /internal/carts/:userId`.
 | ------ | -------------------------- | ----------------- | ---------------------------------------------------- |
 | POST   | `/api/orders`              | Customer          | Create an order from the current cart                |
 | GET    | `/api/orders`              | Customer / Admin  | Own orders; admins see all                           |
-| GET    | `/api/orders/:id`          | Owner or Admin    | One order with its items                             |
+| GET    | `/api/orders/:id`          | Owner or Admin    | One order with its items (`404` for everyone else)   |
 | POST   | `/api/orders/:id/cancel`   | Owner or Admin    | Cancel; only while `PLACED`                          |
 | PATCH  | `/api/orders/:id/status`   | Admin             | Body `{ status: "SHIPPED" or "DELIVERED" }`          |
 
