@@ -21,7 +21,11 @@
     "dev:notification": "npm run dev -w services/notification-service",
     "dev:frontend": "npm run dev -w frontend",
     "test": "npm test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "e2e": "node tests/e2e.mjs"
   },
   "engines": {
     "node": ">=22"

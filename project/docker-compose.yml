@@ -1,13 +1,131 @@
-# For now this starts only the message broker. The services are added when they are packaged in Docker.
+# Starts the whole system:   docker compose up --build
+# Only the gateway (3000), the web client (5173) and the RabbitMQ pages/port are reachable from
+# the host. The five services talk to each other on the internal network only.
+
+x-common-env: &common-env
+  RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+  JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+
 services:
   rabbitmq:
     image: rabbitmq:4-management
     container_name: bookstore-rabbitmq
     ports:
-      - "5672:5672"     # AMQP, used by the services
+      - "5672:5672"     # AMQP (also lets services running on the host connect)
       - "15672:15672"   # management web page (guest / guest)
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+
+  user-service:
+    build: { context: ., args: { SERVICE: services/user-service } }
+    environment:
+      <<: *common-env
+      PORT: "3001"
+      DB_PATH: /data/users.sqlite
+    volumes: [user-data:/data]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  catalog-service:
+    build: { context: ., args: { SERVICE: services/catalog-service } }
+    depends_on: { rabbitmq: { condition: service_healthy } }
+    environment:
+      <<: *common-env
+      PORT: "3002"
+      DB_PATH: /data/catalog.sqlite
+    volumes: [catalog-data:/data]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3002/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  cart-service:
+    build: { context: ., args: { SERVICE: services/cart-service } }
+    depends_on: { rabbitmq: { condition: service_healthy } }
+    environment:
+      <<: *common-env
+      PORT: "3003"
+      DB_PATH: /data/cart.sqlite
+      CATALOG_SERVICE_URL: http://catalog-service:3002
+    volumes: [cart-data:/data]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3003/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  order-service:
+    build: { context: ., args: { SERVICE: services/order-service } }
+    depends_on: { rabbitmq: { condition: service_healthy } }
+    environment:
+      <<: *common-env
+      PORT: "3004"
+      DB_PATH: /data/orders.sqlite
+      CART_SERVICE_URL: http://cart-service:3003
+      CATALOG_SERVICE_URL: http://catalog-service:3002
+    volumes: [order-data:/data]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3004/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  notification-service:
+    build: { context: ., args: { SERVICE: services/notification-service } }
+    depends_on: { rabbitmq: { condition: service_healthy } }
+    environment:
+      <<: *common-env
+      PORT: "3005"
+      DB_PATH: /data/notifications.sqlite
+    volumes: [notification-data:/data]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3005/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  gateway:
+    build: { context: ., args: { SERVICE: gateway } }
+    depends_on:
+      user-service: { condition: service_healthy }
+      catalog-service: { condition: service_healthy }
+      cart-service: { condition: service_healthy }
+      order-service: { condition: service_healthy }
+      notification-service: { condition: service_healthy }
+    ports:
+      - "3000:3000"
+    environment:
+      <<: *common-env
+      PORT: "3000"
+      CORS_ORIGIN: http://localhost:5173
+      USER_SERVICE_URL: http://user-service:3001
+      CATALOG_SERVICE_URL: http://catalog-service:3002
+      CART_SERVICE_URL: http://cart-service:3003
+      ORDER_SERVICE_URL: http://order-service:3004
+      NOTIFICATION_SERVICE_URL: http://notification-service:3005
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    build: { context: ., dockerfile: frontend/Dockerfile }
+    depends_on: { gateway: { condition: service_healthy } }
+    ports:
+      - "5173:80"
+
+# Each service keeps its data in its own volume: no database is shared.
+volumes:
+  user-data:
+  catalog-data:
+  cart-data:
+  order-data:
+  notification-data:
