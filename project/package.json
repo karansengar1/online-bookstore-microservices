@@ -6,18 +6,20 @@
   "type": "module",
   "workspaces": [
     "gateway",
-    "services/*"
+    "services/*",
+    "frontend"
   ],
   "scripts": {
     "infra:up": "docker compose up -d rabbitmq",
     "infra:down": "docker compose down",
-    "dev:all": "concurrently -n user,catalog,cart,order,notif,gateway -c blue,green,yellow,cyan,red,magenta \"npm:dev:user\" \"npm:dev:catalog\" \"npm:dev:cart\" \"npm:dev:order\" \"npm:dev:notification\" \"npm:dev:gateway\"",
+    "dev:all": "concurrently -n user,catalog,cart,order,notif,gateway,web -c blue,green,yellow,cyan,red,magenta,white \"npm:dev:user\" \"npm:dev:catalog\" \"npm:dev:cart\" \"npm:dev:order\" \"npm:dev:notification\" \"npm:dev:gateway\" \"npm:dev:frontend\"",
     "dev:gateway": "npm run dev -w gateway",
     "dev:user": "npm run dev -w services/user-service",
     "dev:catalog": "npm run dev -w services/catalog-service",
     "dev:cart": "npm run dev -w services/cart-service",
     "dev:order": "npm run dev -w services/order-service",
     "dev:notification": "npm run dev -w services/notification-service",
+    "dev:frontend": "npm run dev -w frontend",
     "test": "npm test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },
