@@ -11,7 +11,24 @@ A microservice-based web application for browsing, ordering and tracking books o
 
 **Solution in short.** Five TypeScript microservices (User, Catalog, Cart, Order, Notification) behind an API gateway, a React web client, and a RabbitMQ message broker. Services talk over REST when they need an immediate answer and over events when they only need to be told that something happened. Each service owns its own data. Order updates reach the browser live over WebSocket.
 
-**Status.** The design and documentation are complete (see below). The implementation is added to this folder step by step.
+**Status.** Implemented: all five microservices (User, Catalog, Cart, Order, Notification), the API gateway and the React web client, with about 100 automated tests. See the documents below.
+
+  ## How to run
+
+  Requirements: Node.js 22 and Docker Desktop (RabbitMQ runs in Docker).
+
+  ```
+  cd project
+  npm install
+  npm run infra:up      # starts RabbitMQ
+  npm run dev:all       # starts the five services, the gateway and the web client
+  ```
+
+  Then open http://localhost:5173. Admin login: `admin@bookstore.local` / `Admin12345`. Customers register in the web client.
+
+  ```
+  npm test              # all unit and API tests
+  ```
 
 ## Timeline
 
