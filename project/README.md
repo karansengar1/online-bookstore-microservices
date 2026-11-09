@@ -11,24 +11,25 @@ A microservice-based web application for browsing, ordering and tracking books o
 
 **Solution in short.** Five TypeScript microservices (User, Catalog, Cart, Order, Notification) behind an API gateway, a React web client, and a RabbitMQ message broker. Services talk over REST when they need an immediate answer and over events when they only need to be told that something happened. Each service owns its own data. Order updates reach the browser live over WebSocket.
 
-**Status.** Implemented: all five microservices (User, Catalog, Cart, Order, Notification), the API gateway and the React web client, with about 100 automated tests. See the documents below.
+**Status.** Implemented: all five microservices (User, Catalog, Cart, Order, Notification), the API gateway and the React web client, with about 100 automated tests and an end-to-end test. See the documents below.
 
-  ## How to run
+## How to run
 
-  Requirements: Node.js 22 and Docker Desktop (RabbitMQ runs in Docker).
+Requirements: Node.js 22 and Docker Desktop (RabbitMQ runs in Docker).
 
-  ```
-  cd project
-  npm install
-  npm run infra:up      # starts RabbitMQ
-  npm run dev:all       # starts the five services, the gateway and the web client
-  ```
+```
+cd project
+npm install
+npm run infra:up      # starts RabbitMQ
+npm run dev:all       # starts the five services, the gateway and the web client
+```
 
-  Then open http://localhost:5173. Admin login: `admin@bookstore.local` / `Admin12345`. Customers register in the web client.
+Then open http://localhost:5173. Admin login: `admin@bookstore.local` / `Admin12345`. Customers register in the web client.
 
-  ```
-  npm test              # all unit and API tests
-  ```
+```
+npm test              # all unit and API tests
+npm run e2e           # end-to-end test of the running system (dev:all must be running)
+```
 
 ## Timeline
 
@@ -37,8 +38,8 @@ A microservice-based web application for browsing, ordering and tracking books o
 | 24–25 Oct       | Architecture and documentation                     | [`docs/`](docs/) with Mermaid diagrams                 |
 | 26–28 Oct       | API gateway, User service, Catalog service         | Login works, books can be listed and searched          |
 | 29 Oct – 1 Nov  | Cart service, Order service, RabbitMQ              | Placing an order publishes `order.placed`              |
-| 2–4 Nov         | Notification service, WebSocket, web client        | Client in `project/`, live updates working            |
-| 5–7 Nov         | Docker Compose, tests, final documentation         | `docker compose up` runs the system, tests pass        |
+| 2–4 Nov         | Notification service, WebSocket, web client        | Client in `project/`, live updates working             |
+| 5–8 Nov         | Tests and final documentation                      | `npm test` and `npm run e2e` pass                      |
 
 ## GitHub Projects
 
