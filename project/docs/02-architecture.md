@@ -104,7 +104,7 @@ Only the gateway and the frontend are meant to be reached from outside. The serv
 | Input                | Every request body is validated with zod before use                                               |
 | Secrets              | JWT secret and broker credentials come from environment variables, not from the repository        |
 
-## Planned repository layout
+## Repository layout
 
 ```
 project/
