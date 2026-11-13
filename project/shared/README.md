@@ -1,4 +1,4 @@
-# Shared
+Intentionally empty. The services share no code. The event contracts are described in [04 Data model](../docs/04-data-model.md)
 
 Shared TypeScript types for the event contracts.
 
