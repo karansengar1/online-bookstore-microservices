@@ -117,7 +117,7 @@ project/
     cart-service/
     order-service/
     notification-service/
-  shared/                shared TypeScript types (event contracts)
+  placeholder (the services share no code; the event contracts are in docs/04-data-model.md)
   tests/                 end-to-end tests
   docker-compose.yml
 ```
