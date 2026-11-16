@@ -31,6 +31,15 @@ npm test              # all unit and API tests
 npm run e2e           # end-to-end test of the running system (dev:all must be running)
 ```
 
+Or run everything in Docker with one command (only Docker Desktop is needed):
+
+```
+cd project
+docker compose up --build
+```
+Then open http://localhost:5173. Stop it with `docker compose down`.
+
+
 ## Timeline
 
 | Week            | Goal / Milestone                                   | Verifiable result                                      |
