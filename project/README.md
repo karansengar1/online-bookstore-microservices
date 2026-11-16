@@ -48,7 +48,7 @@ Then open http://localhost:5173. Stop it with `docker compose down`.
 | 26–28 Oct       | API gateway, User service, Catalog service         | Login works, books can be listed and searched          |
 | 29 Oct – 1 Nov  | Cart service, Order service, RabbitMQ              | Placing an order publishes `order.placed`              |
 | 2–4 Nov         | Notification service, WebSocket, web client        | Client in `project/`, live updates working             |
-| 5–8 Nov         | Tests and final documentation                      | `npm test` and `npm run e2e` pass                      |
+| 5–8 Nov         | Docker Compose, tests and final documentation      | `docker compose up` runs the system; `npm test` and `npm run e2e` pass |
 
 ## GitHub Projects
 
